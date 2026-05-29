@@ -1,0 +1,37 @@
+{
+  "name": "tartanak-persian-page",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "verify:editor": "node scripts/verify-editor-runtime.mjs",
+    "start": "next start",
+    "lint": "next lint",
+    "services": "bash scripts/start-services.sh",
+    "services:check": "bash scripts/start-services.sh --check"
+  },
+  "dependencies": {
+    "@types/node": "^20.12.12",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.2.10",
+    "lucide-react": "^0.468.0",
+    "next": "^14.2.3",
+    "nodemailer": "^8.0.8",
+    "postcss": "^8.4.38",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/nodemailer": "^8.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.3"
+  }
+}

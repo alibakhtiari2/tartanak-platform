@@ -1,0 +1,17 @@
+# Build artifacts
+app/.next/
+app/node_modules/
+
+# Secrets and state
+app/.env
+app/memory/
+app/.tartanak/
+app/.ui-edit-agent-runs/
+app/*.jsonl
+
+# Misc
+**/.git/
+**/node_modules/
+**/*.log
+instances/
+*.zip *.tar *.tar.gz
