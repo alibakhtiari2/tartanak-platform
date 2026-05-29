@@ -40,7 +40,8 @@ RUN rm -rf \
 COPY docker/start.sh       ./start.sh
 COPY docker/entrypoint.sh  ./entrypoint.sh
 RUN chmod +x start.sh entrypoint.sh \
-    && mkdir -p logs website/.tartanak/placements
+    && mkdir -p logs website/.tartanak/placements \
+    && chown -R node:node /app/website /app/logs /app/start.sh /app/entrypoint.sh
 
 # ── Default environment — ALL overridable at runtime ─────────────────────────
 ENV APP_PORT=8080 \
