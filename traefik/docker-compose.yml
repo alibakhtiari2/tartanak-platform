@@ -1,0 +1,43 @@
+# Traefik — runs ONCE per server, handles SSL for ALL instances automatically.
+# Start with: docker compose -f /opt/tartanak/traefik/docker-compose.yml up -d
+
+services:
+  traefik:
+    image: traefik:v3.1
+    container_name: tartanak-traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - tartanak-traefik-certs:/certs
+    command:
+      # Docker provider
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=tartanak-web
+      # Entrypoints
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      # HTTP → HTTPS redirect
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      # Let's Encrypt
+      - --certificatesresolvers.le.acme.tlschallenge=true
+      - --certificatesresolvers.le.acme.email=${ACME_EMAIL:-admin@tartanak.com}
+      - --certificatesresolvers.le.acme.storage=/certs/acme.json
+      # WebSocket support
+      - --entrypoints.websecure.transport.respondingTimeouts.readTimeout=86400s
+    networks:
+      - tartanak-web
+    logging:
+      driver: "json-file"
+      options: { max-size: "20m", max-file: "3" }
+
+networks:
+  tartanak-web:
+    external: true
+
+volumes:
+  tartanak-traefik-certs:
