@@ -1,9 +1,13 @@
 # Traefik — runs ONCE per server, handles SSL for ALL instances automatically.
 # Start with: docker compose -f /opt/tartanak/traefik/docker-compose.yml up -d
+#
+# NOTE: Docker provider is disabled due to a Docker API version mismatch between
+# Traefik v3.x (uses API 1.24) and Docker Engine 29+ (minimum API 1.40).
+# Routes are defined statically in ./dynamic/routes.yml instead (file provider).
 
 services:
   traefik:
-    image: traefik:v3.1
+    image: traefik:v3.3
     container_name: tartanak-traefik
     restart: unless-stopped
     ports:
@@ -12,11 +16,11 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - tartanak-traefik-certs:/certs
+      - /opt/tartanak/traefik/dynamic:/dynamic:ro
     command:
-      # Docker provider
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --providers.docker.network=tartanak-web
+      # File provider (replaces Docker provider — avoids API version mismatch on Docker 29+)
+      - --providers.file.directory=/dynamic
+      - --providers.file.watch=true
       # Entrypoints
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443

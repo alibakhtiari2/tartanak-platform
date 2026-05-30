@@ -111,7 +111,7 @@ TARTANAK__GATEWAY__AUTH__TOKEN="${GATEWAY_TOKEN}" \
 TARTANAK__GATEWAY__AUTH__MODE="token" \
   node "$GATEWAY_MJS" gateway run \
     --allow-unconfigured \
-    --bind lan \
+    --bind loopback \
     --dev \
     --port "${GATEWAY_PORT}" \
     --token "${GATEWAY_TOKEN}" \

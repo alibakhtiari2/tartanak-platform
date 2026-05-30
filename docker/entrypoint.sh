@@ -31,7 +31,9 @@ CURRENT_DOMAIN=$(python3 -c "
 import json
 try:
   d = json.load(open('$GATEWAY_CONFIG'))
-  print(d.get('meta', {}).get('configuredDomain', ''))
+  origins = d.get('gateway', {}).get('controlUi', {}).get('allowedOrigins', [])
+  domain = '$DOMAIN'
+  print(domain if any(domain in o for o in origins) else '')
 except:
   print('')
 " 2>/dev/null || echo "")
@@ -69,7 +71,6 @@ cfg = {
     }]
   },
   "meta": {
-    "configuredDomain": os.environ["DOMAIN"],
     "lastTouchedVersion": "2026.5.6"
   }
 }
@@ -80,7 +81,7 @@ fi
 
 # ── 3. Start all services ─────────────────────────────────────────────────────
 log "Starting services (domain=${DOMAIN} port=${APP_PORT:-8080})..."
-bash "$WORK_DIR/start.sh"
+bash "$WORK_DIR/start.sh" || true
 
 _shutdown() { log "Shutting down..."; bash "$WORK_DIR/start.sh" --stop; exit 0; }
 trap _shutdown TERM INT
