@@ -149,7 +149,7 @@ fi
 # ── 3. Pull image ─────────────────────────────────────────────────────────────
 step "3/5  Pull platform image"
 info "Pulling ${IMAGE}..."
-docker pull "$IMAGE" || die "Failed to pull ${IMAGE}. If private: docker login ghcr.io"
+docker pull "$IMAGE" || die "Failed to pull ${IMAGE}"
 success "Image ready"
 
 # ── 4. Create and start instance ──────────────────────────────────────────────
