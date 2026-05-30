@@ -112,7 +112,6 @@ TARTANAK__GATEWAY__AUTH__MODE="token" \
   node "$GATEWAY_MJS" gateway run \
     --allow-unconfigured \
     --bind loopback \
-    --dev \
     --port "${GATEWAY_PORT}" \
     --token "${GATEWAY_TOKEN}" \
     >> "$WORK_DIR/logs/gateway.log" 2>&1 &
@@ -130,6 +129,7 @@ GATEWAY_PORT="${GATEWAY_PORT}" \
 BASE_PATH="${BASE_PATH}" \
 TARTANAK_CLI="${GATEWAY_MJS}" \
 WORKSPACE_DIR="${APP_DIR}" \
+EDITOR_PASSWORD="${GATEWAY_TOKEN}" \
   node "$APP_DIR/scripts/public-port-proxies.mjs" >> "$WORK_DIR/logs/proxy.log" 2>&1 &
 sleep 2; ok "Proxy started"
 

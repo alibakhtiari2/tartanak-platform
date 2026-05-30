@@ -1821,7 +1821,12 @@ function startUnifiedProxy() {
     }
 
     // 2. Gateway dashboard: /tartanak/*  → strip prefix, forward to gateway
-    if (urlPath.startsWith(GATEWAY_BASE + "/") || urlPath === GATEWAY_BASE) {
+    // Redirect /tartanak → /tartanak/ so relative asset URLs resolve correctly
+    if (urlPath === GATEWAY_BASE) {
+      res.writeHead(301, { location: GATEWAY_BASE + "/" + query, "cache-control": "no-store" });
+      res.end(); return;
+    }
+    if (urlPath.startsWith(GATEWAY_BASE + "/")) {
       const stripped = urlPath.slice(GATEWAY_BASE.length) || "/";
       pipeToPort(req, res, GATEWAY_PORT, stripped + query);
       return;
