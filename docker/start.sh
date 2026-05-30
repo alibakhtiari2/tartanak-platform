@@ -122,15 +122,20 @@ done; sleep 1; ok "Gateway started"
 
 # ── Start Unified Proxy ───────────────────────────────────────────────────────
 log "Starting unified proxy on :${APP_PORT}..."
-APP_PORT="${APP_PORT}" \
-NEXT_PORT="${NEXT_PORT}" \
-ANNOTATOR_PORT="${ANNOTATOR_PORT}" \
-GATEWAY_PORT="${GATEWAY_PORT}" \
-BASE_PATH="${BASE_PATH}" \
-TARTANAK_CLI="${GATEWAY_MJS}" \
-WORKSPACE_DIR="${APP_DIR}" \
-EDITOR_PASSWORD="${GATEWAY_TOKEN}" \
-  node "$APP_DIR/scripts/public-port-proxies.mjs" >> "$WORK_DIR/logs/proxy.log" 2>&1 &
+# Wrap in a restart loop so ECONNRESET / unhandled errors don't kill the proxy permanently
+(while true; do
+  APP_PORT="${APP_PORT}" \
+  NEXT_PORT="${NEXT_PORT}" \
+  ANNOTATOR_PORT="${ANNOTATOR_PORT}" \
+  GATEWAY_PORT="${GATEWAY_PORT}" \
+  BASE_PATH="${BASE_PATH}" \
+  TARTANAK_CLI="${GATEWAY_MJS}" \
+  WORKSPACE_DIR="${APP_DIR}" \
+  EDITOR_PASSWORD="${GATEWAY_TOKEN}" \
+    node "$APP_DIR/scripts/public-port-proxies.mjs" >> "$WORK_DIR/logs/proxy.log" 2>&1
+  echo "[proxy] crashed — restarting in 1s..." >> "$WORK_DIR/logs/proxy.log"
+  sleep 1
+done) &
 sleep 2; ok "Proxy started"
 
 # ── Health check ──────────────────────────────────────────────────────────────

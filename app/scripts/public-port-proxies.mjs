@@ -1832,13 +1832,21 @@ function startUnifiedProxy() {
       return;
     }
 
-    // 3. Base-path stripping (if BASE_PATH is set)
+    // 3. Gateway internal API + WebSocket path: /__tartanak/* and /ws → gateway (no prefix strip)
+    if (urlPath.startsWith("/__tartanak/") || urlPath === "/__tartanak" ||
+        urlPath === "/ws" || urlPath.startsWith("/ws?") ||
+        urlPath === "/connect" || urlPath === "/webui" || urlPath.startsWith("/webui/")) {
+      pipeToPort(req, res, GATEWAY_PORT, rawUrl);
+      return;
+    }
+
+    // 4. Base-path stripping (if BASE_PATH is set)
     let websitePath = rawUrl;
     if (BASE_PATH && urlPath.startsWith(BASE_PATH + "/")) {
       websitePath = urlPath.slice(BASE_PATH.length) + query;
     }
 
-    // 4. Public website
+    // 5. Public website
     pipeToPort(req, res, NEXT_PORT, websitePath);
   });
 
@@ -1855,6 +1863,11 @@ function startUnifiedProxy() {
       // Gateway WebSocket — strip /tartanak prefix
       targetPort = GATEWAY_PORT;
       targetPath = (wsPath.slice(GATEWAY_BASE.length) || "/") + wsQuery;
+    } else if (wsPath === "/ws" || wsPath.startsWith("/ws?") ||
+               wsPath.startsWith("/__tartanak/") || wsPath === "/__tartanak") {
+      // Gateway internal WebSocket / API endpoints — forward as-is
+      targetPort = GATEWAY_PORT;
+      targetPath = wsUrl;
     } else if (wsPath.startsWith(EDIT_BASE)) {
       // Next.js HMR inside editor frame
       const stripped = wsPath.slice(EDIT_BASE.length) || "/";
